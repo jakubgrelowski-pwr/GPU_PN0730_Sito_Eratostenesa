@@ -1,43 +1,39 @@
 import random
+import math
 
+def is_probably_prime(number, testCount):
+    if number <= 2 or number % 2 == 0:
+        return "Bledny argument. (n <= 2 or n % 2 == 0)"
 
-def miller_rabin_test(n, k):
-    if n <= 1 or n == 4:
-        return "jest l. zlozona"
-    if n <= 3:
-        return "jest prawdopodobnie l. pierwsza"
+    if number == 3:
+        return f"{number} jest l. pierwsza"
 
-    s, d = 0, n - 1
+    s, d = 0, number - 1
     while d % 2 == 0:
         s += 1
         d //= 2
 
-    for _ in range(k):
-        a = random.randint(2, n - 2)
-        x = pow(a, d, n)
-
+    def witness(a, x, n):
         for _ in range(s):
-            y = pow(x, 2, n)
+            x = (x ** 2) % n
+            if x == 1 and a != 1 and a != n - 1:
+                return False
+        return x != 1
 
-            if y == 1 and x != 1 and x != n - 1:
-                return "jest wielokrotnoscia", gcd(x - 1, n)
+    for _ in range(testCount):
+        a = random.randint(2, number - 2)
+        x = pow(a, d, number)
+        if x == 1 or x == number - 1:
+            continue
 
-            x = y
+        if witness(a, x, number):
+            return f"{number} jest l. zlozona"
 
-        if x != 1:
-            return "jest l. zlozona"
+    return f"{number} jest prawdopodobnie l. pierwsza"
 
-    return "jest prawdopodobnie l. pierwsza"
-
-
-def gcd(a, b):
-    while b:
-        a, b = b, a % b
-    return a
+print(is_probably_prime(number = 3, testCount = 523))
 
 
-# Example usage
-n = 123908479253851
-k = 100
-result = miller_rabin_test(n, k)
-print(result)
+
+
+
