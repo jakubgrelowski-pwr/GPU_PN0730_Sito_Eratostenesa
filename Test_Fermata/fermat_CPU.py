@@ -15,8 +15,11 @@ def power_mod(base, exponent, mod):
 # najwiekszy wspolny dzielnik
 def gcd(number1, number2):
     while number2 != 0:
-        number1, number2 = number2, number1%number2
+        number1, number2 = number2, number1 % number2
     return number1
+
+def is_coprime(number1, number2):
+    return gcd(number1,number2) == 1
 # 561 - liczba Carmichaela dla ktorej wychodzi roznie
 p = 13
 
