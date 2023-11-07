@@ -12,9 +12,13 @@ def power_mod(base, exponent, mod):
         exponent //= 2
     
     return result
-
+# najwiekszy wspolny dzielnik
+def gcd(number1, number2):
+    while number2 != 0:
+        number1, number2 = number2, number1%number2
+    return number1
 # 561 - liczba Carmichaela dla ktorej wychodzi roznie
-p = 3
+p = 13
 
 # Liczba powtórzeń:
 num_threads = 4
@@ -26,11 +30,12 @@ base_a = []
 for i in range(num_threads):
     base_a.append(random.randint(2, 1000))
 
-print(base_a)
+print("wylosowane a", base_a)
 
 # Tworzenie wątków
 threads = []
 for i in range(num_threads):
+    print("base_a",base_a[i])
     thread = threading.Thread(target=lambda i=i: results.append(power_mod(base_a[i], p-1,p)))
     threads.append(thread)
     thread.start()
