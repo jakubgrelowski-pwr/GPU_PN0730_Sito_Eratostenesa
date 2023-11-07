@@ -18,8 +18,10 @@ def gcd(number1, number2):
         number1, number2 = number2, number1 % number2
     return number1
 
+# czy liczby są wzajemnie pierwsze
 def is_coprime(number1, number2):
     return gcd(number1,number2) == 1
+
 # 561 - liczba Carmichaela dla ktorej wychodzi roznie
 p = 13
 
@@ -30,15 +32,20 @@ num_threads = 4
 results = []
 base_a = []
 
-for i in range(num_threads):
-    base_a.append(random.randint(2, 1000))
+def fill_base_a(num_threads, p):
+    while len(base_a) != num_threads:
+        probably_a = random.randint(2, 1000)
+        if(is_coprime(probably_a, p)):
+            base_a.append(probably_a)
+            
+    return base_a
+fill_base_a(num_threads, p)
 
 print("wylosowane a", base_a)
 
 # Tworzenie wątków
 threads = []
 for i in range(num_threads):
-    print("base_a",base_a[i])
     thread = threading.Thread(target=lambda i=i: results.append(power_mod(base_a[i], p-1,p)))
     threads.append(thread)
     thread.start()
