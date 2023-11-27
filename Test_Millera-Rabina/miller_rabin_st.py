@@ -1,7 +1,8 @@
 import random
 import math
+import sys
 
-def is_probably_prime(number, testCount):
+def is_probably_prime(number, test_count):
     if number <= 2 or number % 2 == 0:
         return "Bledny argument. (n <= 2 or n % 2 == 0)"
 
@@ -20,20 +21,25 @@ def is_probably_prime(number, testCount):
                 return False
         return x != 1
 
-    for _ in range(testCount):
+    for _ in range(test_count):
         a = random.randint(2, number - 2)
         x = pow(a, d, number)
         if x == 1 or x == number - 1:
             continue
 
         if witness(a, x, number):
-            return f"{number} jest l. zlozona"
+            return False
 
-    return f"{number} jest prawdopodobnie l. pierwsza"
+    return True
 
-print(is_probably_prime(number = 3, testCount = 523))
+if __name__ == "__main__":
+    if len(sys.argv) != 3:
+        print("Uzycie: python miller_rabin_st.py <liczba_do_przetestowania> <liczba_iteracji>")
+        sys.exit(1)
+    
+    n = int(sys.argv[1])
+    k = int(sys.argv[2])
 
-
-
-
-
+    is_prime = is_probably_prime(n, k)
+    result_text = f"{n} jest prawdopodobnie liczba pierwsza." if is_prime else f"{n} nie jest liczba pierwsza."
+    print(result_text)

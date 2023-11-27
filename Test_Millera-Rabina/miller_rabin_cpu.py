@@ -1,5 +1,6 @@
 import random
 import threading
+import sys
 
 def miller_rabin_test(n, k=10):
     if n <= 1:
@@ -22,7 +23,6 @@ def miller_rabin_test(n, k=10):
             d //= 2
 
         def test_witness(a):
-            print(a)
             x = pow(a, d, n)
             if x in(1, n - 1):
                 return True
@@ -56,12 +56,13 @@ def miller_rabin_test(n, k=10):
     return bool(all(results))
 
 if __name__ == "__main__":
-    n = int(input("Podaj liczbę do przetestowania: "))
-    k = int(input("Liczba iteracji testu (zalecane minimum 10): "))
+    if len(sys.argv) != 3:
+        print("Uzycie: python miller_rabin_st.py <liczba_do_przetestowania> <liczba_iteracji>")
+        sys.exit(1)
+    
+    n = int(sys.argv[1])
+    k = int(sys.argv[2])
 
     is_prime = miller_rabin_test(n, k)
-
-    if is_prime:
-        print(f"{n} jest prawdopodobnie liczbą pierwszą.")
-    else:
-        print(f"{n} nie jest liczbą pierwszą.")
+    result_text = f"{n} jest prawdopodobnie liczba pierwsza." if is_prime else f"{n} nie jest liczba pierwsza."
+    print(result_text)

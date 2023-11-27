@@ -1,6 +1,7 @@
 import random
 import pyopencl as cl
 import numpy as np
+import sys
 
 # Pobieranie informacji o platformie i urządzeniu OpenCL
 platform = cl.get_platforms()[0]
@@ -83,12 +84,13 @@ def miller_rabin_test_gpu(n, k):
 
 # Główna funkcja programu
 if __name__ == "__main__":
-    n = int(input("Podaj liczbę do przetestowania: "))
-    k = int(input("Liczba iteracji testu (zalecane minimum 10): "))
+    if len(sys.argv) != 3:
+        print("Uzycie: python miller_rabin_st.py <liczba_do_przetestowania> <liczba_iteracji>")
+        sys.exit(1)
+    
+    n = int(sys.argv[1])
+    k = int(sys.argv[2])
 
     is_prime = miller_rabin_test_gpu(n, k)
-
-    if is_prime:
-        print(f"{n} jest prawdopodobnie liczbą pierwszą.")
-    else:
-        print(f"{n} nie jest liczbą pierwszą.")
+    result_text = f"{n} jest prawdopodobnie liczba pierwsza." if is_prime else f"{n} nie jest liczba pierwsza."
+    print(result_text)
