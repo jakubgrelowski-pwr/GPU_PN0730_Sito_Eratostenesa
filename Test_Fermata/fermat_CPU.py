@@ -1,8 +1,6 @@
 import threading
 import random
 import cProfile
-import psutil
-import GPUtil
 
 # Losowa liczba i wykonanie obliczenia:
 def power_mod(base, exponent, mod):
@@ -15,21 +13,18 @@ def power_mod(base, exponent, mod):
         exponent //= 2
     
     return result
+# najwiekszy wspolny dzielnik
+def gcd(number1, number2):
+    while number2 != 0:
+        number1, number2 = number2, number1 % number2
+    return number1
 
-def monitor_system_usage():
-    # CPU usage
-    cpu_usage = psutil.cpu_percent(interval=1)
-
-    # GPU usage
-    gpus = GPUtil.getGPUs()
-    gpu_usage = [gpu.load * 100 for gpu in gpus]
-
-    print(f"CPU Usage: {cpu_usage}%")
-    for i, gpu in enumerate(gpus):
-        print(f"GPU {i + 1} Usage: {gpu.load * 100}%")
+# czy liczby są wzajemnie pierwsze
+def is_coprime(number1, number2):
+    return gcd(number1,number2) == 1
 
 # 561 - liczba Carmichaela dla ktorej wychodzi roznie
-p = 2
+p = 1000037
 
 # Liczba powtórzeń:
 num_threads = 100000
@@ -38,15 +33,19 @@ num_threads = 100000
 results = []
 base_a = []
 
-for i in range(num_threads):
-    base_a.append(random.randint(2, 1000))
+def fill_base_a(num_threads, p):
+    while len(base_a) != num_threads:
+        probably_a = random.randint(2, 1000)
+        if(is_coprime(probably_a, p)):
+            base_a.append(probably_a)
+            
+    return base_a
+fill_base_a(num_threads, p)
 
 # print(base_a)
 
-# Create a profiler object
+# Start pomiaru
 profiler = cProfile.Profile()
-
-# Start profiling
 profiler.enable()
 
 # Tworzenie wątków
@@ -68,14 +67,9 @@ for i in results:
     if i!=1:
         is_prime = False
 
-# Stop profiling
+# Pomiar
 profiler.disable()
-
-# Print the profiling results
 profiler.print_stats()
-
-# Monitor system usage
-monitor_system_usage()
 
 if is_prime:
     print(p, " jest prawdopodobnie l. pierwsza")
