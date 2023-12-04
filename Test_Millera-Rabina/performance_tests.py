@@ -2,7 +2,7 @@ import subprocess
 import time
 from random import randint
 
-scripts = ["miller_rabin_st.py", "miller_rabin_gpu.py", "miller_rabin_cpu.py"]
+scripts = ["miller_rabin_st.py", "miller_rabin_cpu.py"]
 
 number_ranges = {
     "1001-9999": (1001, 9999),
@@ -32,12 +32,12 @@ for range_name, number_range in number_ranges.items():
         print(f"Test algorytmu {script}")
         for _ in range(TEST_COUNT):
             n = randint(*number_range)
-            
+
             time_taken, result = measure_time(script, n, k)
             total_times[script][range_name] += time_taken
-            
+
             print(f"Algorytm {script}, test {_+1}/{TEST_COUNT}, czas: {time_taken:.4f}s, rezultat: {result}")
-        
+
         avg_time = total_times[script][range_name] / TEST_COUNT
         print(f"Średni czas wykonania {script} w zakresie {range_name}: {avg_time:.4f}s\n")
 
