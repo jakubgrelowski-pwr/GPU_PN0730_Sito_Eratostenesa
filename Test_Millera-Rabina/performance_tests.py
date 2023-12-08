@@ -2,7 +2,7 @@ import subprocess
 import time
 from random import randint
 
-scripts = ["miller_rabin_st.py", "miller_rabin_cpu.py"]
+scripts = ["miller_rabin_st.py", "miller_rabin_cpu.py", "miller_rabin_gpu.py", "../Test_Fermata/fermat_CPU.py", "../Test_Fermata/fermat_GPU.py"]
 
 number_ranges = {
     "1001-9999": (1001, 9999),
