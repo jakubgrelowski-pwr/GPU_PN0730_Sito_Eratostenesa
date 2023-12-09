@@ -1,6 +1,7 @@
 import random
 import pyopencl as cl
 import numpy as np
+import sys
 import time
 
 # Pobieranie informacji o platformie i urządzeniu OpenCL
@@ -94,33 +95,13 @@ def miller_rabin_test_gpu(n, k):
 
 # Główna funkcja programu
 if __name__ == "__main__":
-    number_ranges = {
-        "1001-9999": (1001, 9999),
-        "10001-99999": (10001, 99999),
-        "100001-999999": (100001, 999999)
-    }
+    if len(sys.argv) != 3:
+        print("Uzycie: python miller_rabin_gpu.py <liczba_do_przetestowania> <liczba_iteracji>")
+        sys.exit(1)
 
-    k = 100
-    num_repeats = 10
+    n = int(sys.argv[1])
+    k = int(sys.argv[2])
 
-    for range_name, (start, end) in number_ranges.items():
-        total_execution_time = 0.0
-
-        for _ in range(num_repeats):
-            n = random.randint(start, end)
-
-            start_time = time.time()
-            is_prime = miller_rabin_test_gpu(n, k)
-            end_time = time.time()
-
-            execution_time = end_time - start_time
-            total_execution_time += execution_time
-
-        average_execution_time = total_execution_time / num_repeats
-
-        if is_prime:
-            print(
-                f"Range: {range_name}, Number of Repeats: {num_repeats}, Average Execution Time: {average_execution_time:.10f} seconds - {n} is probably prime.")
-        else:
-            print(
-                f"Range: {range_name}, Number of Repeats: {num_repeats}, Average Execution Time: {average_execution_time:.10f} seconds - {n} is not prime.")
+    is_prime = miller_rabin_test_gpu(n, k)
+    result_text = f"{n} jest prawdopodobnie liczba pierwsza." if is_prime else f"{n} nie jest liczba pierwsza."
+    print(result_text)

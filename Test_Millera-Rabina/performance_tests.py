@@ -1,13 +1,16 @@
 import subprocess
 import time
-from random import randint
+from random import randint, choice
 
-scripts = ["miller_rabin_st.py", "miller_rabin_cpu.py", "miller_rabin_gpu.py", "../Test_Fermata/fermat_CPU.py", "../Test_Fermata/fermat_GPU.py"]
+carmichael_numbers = [633267, 414154, 622188, 269938, 788018, 676447, 858479, 201674, 996040, 1000037]
+
+scripts = ["miller_rabin_st.py", "miller_rabin_cpu.py", "miller_rabin_gpu.py", "../Test_Fermata/fermat_cpu_test.py", "../Test_Fermata/fermat_gpu_test.py"]
 
 number_ranges = {
     "1001-9999": (1001, 9999),
     "10001-99999": (10001, 99999),
-    "100001-999999": (100001, 999999)
+    "100001-999999": (100001, 999999),
+    "Carmichael": carmichael_numbers
 }
 
 TEST_COUNT = 100
@@ -27,11 +30,11 @@ def measure_time(script, n, k):
 total_times = {script: {range_name: 0 for range_name in number_ranges} for script in scripts}
 
 for range_name, number_range in number_ranges.items():
-    print(f"Testing range {range_name}: {number_range}")
+    print(f"Zakres testu {range_name}: {number_range}")
     for script in scripts:
         print(f"Test algorytmu {script}")
         for _ in range(TEST_COUNT):
-            n = randint(*number_range)
+            n = randint(*number_range) if range_name != "Carmichael" else choice(carmichael_numbers)
 
             time_taken, result = measure_time(script, n, k)
             total_times[script][range_name] += time_taken

@@ -57,7 +57,7 @@ def miller_rabin_test(n, k=10):
 
 if __name__ == "__main__":
     if len(sys.argv) != 3:
-        print("Uzycie: python miller_rabin_st.py <liczba_do_przetestowania> <liczba_iteracji>")
+        print("Uzycie: python miller_rabin_cpu.py <liczba_do_przetestowania> <liczba_iteracji>")
         sys.exit(1)
     
     n = int(sys.argv[1])
