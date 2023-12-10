@@ -11,16 +11,16 @@ queue = cl.CommandQueue(context, properties=cl.command_queue_properties.PROFILIN
 
 # Kernel wykonujący test pierwszości Millera-Rabina na GPU.
 program_source = """
-    __kernel void test_witness(__global const int* a, int s, int d, int n, __global int* result) {
-    int gid = get_global_id(0);
-    int x = a[gid];
-    for (int i = 1; i < d; i++) {
+__kernel void test_witness(__global const ulong* a, ulong s, ulong d, ulong n, __global int* result) {
+    ulong gid = get_global_id(0);
+    ulong x = a[gid];
+    for (ulong i = 1; i < d; i++) {
         x = (x * a[gid]) % n;
     }
     if (x == 1 || x == n - 1) {
         result[gid] = 1;
     } else {
-        for (int i = 0; i < s - 1; i++) {
+        for (ulong i = 0; i < s - 1; i++) {
             x = (x * x) % n;
             if (x == n - 1) {
                 result[gid] = 1;
@@ -65,29 +65,25 @@ def miller_rabin_test_gpu(n, k):
         result_gpu = np.zeros(k, dtype=np.int32)
 
         # Przygotowanie buforów na urządzenie OpenCL
-        a_buf = cl.Buffer(context, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=a_gpu)
+        a_buf = cl.Buffer(context, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=a_gpu.astype(np.uint64))
         result_buf = cl.Buffer(context, cl.mem_flags.WRITE_ONLY, result_gpu.nbytes)
 
         # Wywołanie kernela OpenCL do wykonania testu Millera-Rabina na GPU
         global_size = (k,)
         local_size = None
-        event = program.test_witness(queue, global_size, local_size, a_buf, np.int32(s), np.int32(d), np.int32(n), result_buf)
-
-        # Wait for the event to finish
+        event = program.test_witness(queue, global_size, local_size, a_buf, np.uint64(s), np.uint64(d), np.uint64(n), result_buf)
         event.wait()
 
-        # Get profiling information
         start_time = event.profile.start
         end_time = event.profile.end
-        execution_time = (end_time - start_time) * 1e-9  # Convert nanoseconds to seconds
+        execution_time = (end_time - start_time) * 1e-9
         #print("Kernel execution time: {:.10f} seconds".format(execution_time))
 
         # Kopiowanie wyników z urządzenia do pamięci CPU
         cl.enqueue_copy(queue, result_gpu, result_buf).wait()
 
         # Sprawdzenie wyników testów
-        results = [bool(result) for result in result_gpu]
-
+        results = [int(result) for result in result_gpu]
         return all(results)
 
     return is_probably_prime(n, k)
