@@ -1,7 +1,6 @@
 import random
 import pyopencl as cl
 import numpy as np
-import sys
 import time
 
 # Pobieranie informacji o platformie i urządzeniu OpenCL
@@ -95,13 +94,35 @@ def miller_rabin_test_gpu(n, k):
 
 # Główna funkcja programu
 if __name__ == "__main__":
-    if len(sys.argv) != 3:
-        print("Uzycie: python miller_rabin_gpu.py <liczba_do_przetestowania> <liczba_iteracji>")
-        sys.exit(1)
 
-    n = int(sys.argv[1])
-    k = int(sys.argv[2])
+    carmichael_numbers = [633267, 414154, 622188, 269938, 788018, 676447, 858479, 201674, 996040, 1000037]
 
-    is_prime = miller_rabin_test_gpu(n, k)
-    result_text = f"{n} jest prawdopodobnie liczba pierwsza." if is_prime else f"{n} nie jest liczba pierwsza."
-    print(result_text)
+    number_ranges = {
+        "1001-9999": (1001, 9999),
+        "10001-99999": (10001, 99999),
+        "100001-999999": (100001, 999999),
+        "Carmichael": carmichael_numbers
+    }
+
+
+    k = 10000
+    num_repeats = 100
+
+    for range_name, number_range in number_ranges.items():
+        total_execution_time = 0.0
+
+        for _ in range(num_repeats):
+            n = random.randint(*number_range) if range_name != "Carmichael" else random.choice(carmichael_numbers)
+
+            start_time = time.time()
+            is_prime = miller_rabin_test_gpu(n, k)
+            end_time = time.time()
+
+            execution_time = end_time - start_time
+            total_execution_time += execution_time
+
+            print(f"Algorytm Millera-Rabina GPU, test {_ + 1}/{num_repeats}, czas: {execution_time:.4f}s, rezultat: {n} is prime: {is_prime}")
+
+        average_execution_time = total_execution_time / num_repeats
+
+        print(f"Range: {range_name}, Number of Repeats: {num_repeats}, Average Execution Time: {average_execution_time:.10f} seconds\n")
